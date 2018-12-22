@@ -26,11 +26,22 @@ class BloomFilter(object):
         # False posible probability in decimal 
         self.fp_prob = fp_prob 
   
+
+        # OPTION ONE
+        ''' 
         # Size of bit array to use 
         self.size = self.get_size(items_count,fp_prob) 
   
         # number of hash functions to use 
-        self.hash_count = self.get_hash_count(self.size,items_count) 
+        self.hash_count = self.get_hash_count(self.size, items_count)
+        '''
+
+        # OPTION TWO
+        self.hash_count = self.get_hash_count_by_prob(fp_prob)
+        self.size = self.get_size(items_count,fp_prob)
+
+        print(f'Shape hash_count: {self.get_hash_count(self.size, items_count)}')
+        print(f'Shape hash_countByProb: {self.get_hash_count_by_prob(fp_prob)}') 
   
         # Bit array of given size 
         self.bit_array = bitarray(self.size) 
@@ -95,6 +106,20 @@ class BloomFilter(object):
             number of items expected to be stored in filter 
         '''
         k = (m/n) * math.log(2) 
+        return int(k) 
+
+    @classmethod
+    def get_hash_count_by_prob(self, fp_prob): 
+        ''' 
+        Return the optimized hash function(k) to be used based on fp_prob
+        k = (m/n) * lg(2) 
+  
+        m : int 
+            size of bit array 
+        n : int 
+            number of items expected to be stored in filter 
+        '''
+        k = math.log( 1/fp_prob) / math.log(2) 
         return int(k) 
 
 
