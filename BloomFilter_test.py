@@ -6,31 +6,11 @@ from BloomFilter import BloomFilter
 
 from random import shuffle 
 
+"""
+class BloomFilterThread(threading.Thread):
+	 def __init__(self, bl`):
+"""
 
-'''
-def evaluate_error_rate(word_present_cnt, word_absent_cnt, word_list, bloom_filter):
-	for item in word_list[:word_present_cnt]:
-		bloom_filter.add(item)
-  
-	# random shuffle
-	shuffle(word_present) 
-	shuffle(word_absent) 
-
-	#test_words = word_present[:(int)(len(word_present)/2)] + word_absent[:(int)(len(word_absent)/2)]
-
-	test_words = word_present[:10000] + word_absent[:10000]
-
-	fp_cnt = 0
-	total_cn = len(test_words)
-
-	for word in test_words:
-		if bloom_filter.check(word):
-			if word in word_absent:
-				print (f'false positive') 
-				fp_cnt = fp_cnt + 1
-
-	return  fp_cnt / total_cn
-'''
 def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size = 10000):
 	for item in word_present:
 		bloom_filter.add(item)
@@ -54,17 +34,14 @@ def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size = 100
 
 	return  fp_cnt / total_cn
 
-
-if __name__ == '__main__':
-
+def evaluate_hash_Count_and_Array_size(items_count, fp_list):
 	"""
 	 evaluate hash Count and array size by given desgired false positive probability only
 	"""
+	print(f'====================================================================================')
+	print(f'evaluate hash Count and array size by given desgired false positive probability only')
+	print(f'====================================================================================')
 
-	"""
-	# 10 million data 
-	items_count = 10000000
-	fp_list = [0.1, 0.01, 0.001, 0.0001]
 	for fp_prob in fp_list:
 		size = BloomFilter.get_size(items_count,fp_prob)
 		ratio = size / items_count
@@ -72,19 +49,17 @@ if __name__ == '__main__':
 		print(f'hash_count: {BloomFilter.get_hash_count_by_array_size_and_element_size(size, items_count)} \
 	 		ratio: {format(ratio, ".2e")}')
 		print(f'hash_countByProb: {BloomFilter.get_hash_count_by_fp_prob(fp_prob)} \
-	 		ratio: {format(ratio, ".2e")}') 
+	 		ratio: {format(ratio, ".2e")}')
+
+def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
+	"""
+	 evaluate false positive rate by given desgired false positive probability and given k hash function constraints
 	"""
 
+	print(f'===============================================================================================================')
+	print(f'evaluate false positive rate by given desgired false positive probability and given k hash function constraints')
+	print(f'===============================================================================================================')
 
-	"""
-	evaluate array size by given desgired false positive probability and given k hash function constraints
-	"""
-
-	
-	# 10 million data 
-	items_count = 10000000
-	fp_list = [0.1, 0.01, 0.001, 0.0001]
-	hash_cnt_list = [1, 2, 3, 4]
 	for fp_prob in fp_list:
 		for hash_cnt in hash_cnt_list:
 
@@ -99,11 +74,26 @@ if __name__ == '__main__':
 				hash_count: {hash_cnt} \
 				ratio: {format(ratio, ".2e")} \
 				space(MB): {format(size / math.pow(2, 20) / 8, "f")}')
-	
 
-	#=======================
+if __name__ == '__main__':
+
+
+	# 10 million data 
+	items_count = 10000000
+	# false positive list
+	fp_list = [0.1, 0.01, 0.001, 0.0001]
+	# hash cnt list
+	hash_cnt_list = [1, 2, 3, 4]
+
+	#evaluate hash Count and array size by given desgired false positive probability only
+	evaluate_hash_Count_and_Array_size(items_count, fp_list)
+
+	# evaluate array size by given desgired false positive probability and given k hash function constraints
+	evaluate_fp_rate(items_count, fp_list, hash_cnt_list)
+
+	"""
 	# evaluate false positive rate by given desgired false positive probability and given k hash function constraints
-	#=======================
+	"""
 	"""
 	word_list = []
 	int_file = None
