@@ -31,7 +31,6 @@ class BloomFilter(object):
             # False posible probability in decimal 
             self.fp_prob = fp_prob 
 
-            # OPTION TWO
             self.hash_count = hash_count
             self.size = (int)(self.get_size_by_hash_count_and_fp_prob(items_count, hash_count, fp_prob))
 
@@ -39,18 +38,6 @@ class BloomFilter(object):
             # False posible probability in decimal 
             self.fp_prob = fp_prob 
 
-            #if self.fp_prob == 0:
-            #    self.hash_count = (int)(self.get_hash_count_by_array_size_and_element_size(self.size, items_count))
-            #else:
-            #    self.hash_count = (int) (self.get_hash_count_by_fp_prob(fp_prob))
-
-  
-            # OPTION ONE 
-            # number of hash functions to use 
-            #self.hash_count = (int)(self.get_hash_count_by_array_size_and_element_size(self.size, items_count))
-            
-
-            # OPTION TWO
             # number of hash functions to use 
             self.hash_count = (int) (self.get_hash_count_by_fp_prob(fp_prob))
 
@@ -65,7 +52,7 @@ class BloomFilter(object):
         # Bit array of given size 
         self.bit_array = bitarray(self.size) 
         # initialize all bits as 0 
-        self.clear_all() 
+        self.clear_all()
   
     def add(self, item): 
         """
@@ -83,7 +70,7 @@ class BloomFilter(object):
             # set the bit True in bit_array 
             self.bit_array[array_index] = True
   
-    def check(self, item): 
+    def may_match(self, item): 
         """
         Check for existence of an item in filter 
         Args:
