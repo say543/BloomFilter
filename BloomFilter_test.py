@@ -156,6 +156,7 @@ def read_test(name, bloom_filter, data, lock):
         lock.release() 
 
 def read_write_multiprocess_test(num_of_process, items_count, fp_rpob, hash_cnt):
+
     """
     test read write  random multithread test'
     """
@@ -219,6 +220,7 @@ if __name__ == '__main__':
     # random read write test
     # eg number of process = 8, items_count = 1000, fp_prob = 0.01, hash_cnt=3,
     read_write_multiprocess_test(8, 1000, 0.01, 3)
+
 
     # 10 million data 
     items_count = 10000000
