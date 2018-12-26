@@ -3,11 +3,11 @@
 import math
 import time
 
-import threading
 
 from BloomFilter import BloomFilter 
 
 from random import shuffle 
+from random import randrange
 
 import multiprocessing as mp
 from multiprocessing.managers import BaseManager
@@ -15,7 +15,6 @@ from multiprocessing.managers import BaseManager
 
 class MyManager(BaseManager):
     pass
-MyManager.register('BloomFilter', BloomFilter)
 
 def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size):
     """
@@ -86,6 +85,10 @@ def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
                 ratio: {format(ratio, ".2e")} \
                 space(MB): {format(size / math.pow(2, 20) / 8, "f")}')
 
+
+
+
+
 def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_size=10000):
     """
     # test false positive probability by given desgired false positive probability and given k hash function constraints
@@ -134,35 +137,12 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
         print (f'flase positive rate: \
             {format(evaluate_error_rate(word_present, word_absent, bloom_filter, min(test_size, len(word_list))), "f")}')
 
-
-''''
-class Producer(threading.Thread):
-    def __init__(self, name, data):
-        threading.Thread.__init__(self, name, bloom_filter)
-        self.data = data
-        self.bloom_filter = bloom_filter
-
-    def run(self):
-        bloom_filter.add(data)
-        print (f'thread {name} add data:{data}')
-
-class Consumer(threading.Thread):
-    def __init__(self,name,queue):
-        threading.Thread.__init__(self, name, bloom_filter)
-        self.data = data
-        self.bloom_filter = bloom_filter
-    def run(self):
-        res = bloom_filter.may_match(data)
-        print (f'thread {name} look up data:{data} = {res}')
-'''
-
-
 def write_test(name, bloom_filter, data, lock):
     try:
         lock.acquire() 
         bloom_filter.add(data)
-        print (f'{name} add data:{data}')
-        print (f'Wlook up data:{data} = {bloom_filter.may_match(data)}')
+        print (f'{name} add data: {data}')
+        #print (f'Wlook up data:{data} = {bloom_filter.may_match(data)}')
 
     except Exception as e:
         raise
@@ -173,53 +153,78 @@ def read_test(name, bloom_filter, data, lock):
     try:
         lock.acquire() 
         res = bloom_filter.may_match(data)
-        print (f'{name} look up data:{data} = {res}')
+        print (f'{name} look up data: {data} = {res}')
     except Exception as e:
         raise
     finally:
         lock.release() 
 
-def read_write_multithread_test(word):
+def read_write_multithread_test(num_of_process, items_count, fp_rpob, hash_cnt):
     """
-    test bloom filter multi thread testing
+    test read write  random multithread test'
     """
-
-
     print(f'===============================================================================================================')
-    print(f'read write test')
+    print(f'test read write  random multithread test')
     print(f'===============================================================================================================')
+    if num_of_process <= 0:
+        raise ValueError("num_of_process must bigger than zero")
+
     
+    MyManager.register('BloomFilter', BloomFilter)
+
     manager = MyManager()
     manager.start()
 
+    word_list = ['gems','generosity','generous','generously','genial', 'racism','hurt','nuke','gloomy','facebook']
 
     # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
-    bloom_filter = manager.BloomFilter(1000, 0.01, 2) 
+    bloom_filter = manager.BloomFilter(items_count, fp_rpob, hash_cnt) 
 
     lock= mp.Lock() 
 
+    shuffle(word_list)
+    processes = []
+    for i in range(num_of_process):
+        mode = randrange(3)
+        word_index = randrange(len(word_list));
+        if mode == 0 :
+            processes.append(mp.Process(target = write_test, args=(f'write_{i}', bloom_filter, word_list[word_index], lock)))
+        else:
+            processes.append(mp.Process(target = read_test, args=(f'read_{i} ', bloom_filter, word_list[word_index], lock)));
 
-    t1 = mp.Process(target = write_test, args=("write", bloom_filter, word, lock))
-    t2 = mp.Process(target = read_test, args=("read", bloom_filter, word, lock));
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join()        
 
-    #t1.start()
-    t2.start()
-    #t1.join()
-    t2.join()
+    manager.shutdown()
+    manager.join()
 
     
-def read_write_test(word):
+def read_write_test(word, items_count, fp_rpob, hash_cnt):
+    """
+    test single write and read test
+    """
+    print(f'===============================================================================================================')
+    print(f'single write and read test')
+    print(f'===============================================================================================================')   
     # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
-    bloom_filter = BloomFilter(1000, 0.01, 2) 
+    bloom_filter = BloomFilter(items_count, fp_rpob, hash_cnt) 
     bloom_filter.add(word)
-    print (f'look up data:{word} = {bloom_filter.may_match(word)}')
+    print (f'add data: {word}')
+    print (f'look up data: {word} = {bloom_filter.may_match(word)}')
 
 
 if __name__ == '__main__':
 
 
     # single read write test
-    #read_write_test("wordtest")
+    # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    read_write_test("wordtest", 1000, 0.01, 3)
+
+    # random read write test
+    # eg number of process = 8, items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    read_write_multithread_test(8, 1000, 0.01, 3)
 
     # 10 million data 
     items_count = 10000000
@@ -228,7 +233,6 @@ if __name__ == '__main__':
     # hash cnt list
     hash_cnt_list = [1, 2, 3, 4]
 
-    """
     #evaluate hash Count and array size by given desgired false positive probability only
     evaluate_hash_Count_and_Array_size(items_count, fp_list)
 
@@ -238,6 +242,3 @@ if __name__ == '__main__':
     # evaluate false positive rate by given desgired false positive probability and given k hash function constraints
     # eg: fp_prob = 0.01, hash_cnt=3, iteration=30, test_size=10000
     test_real_fp_prob("wordlist.txt", 0.01, 3, 30, 10000)
-    """
-
-    read_write_multithread_test("wordtest")

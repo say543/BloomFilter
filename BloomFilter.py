@@ -41,7 +41,7 @@ class BloomFilter(object):
             # number of hash functions to use 
             self.hash_count = (int) (self.get_hash_count_by_fp_prob(fp_prob))
 
-            self.size = (int )( self.get_size(items_count, fp_prob))
+            self.size = (int)( self.get_size(items_count, fp_prob))
             
         # outout initlization information
         print(f'false_positive:{fp_prob} \
