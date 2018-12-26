@@ -1,8 +1,5 @@
-
-
 import math
 import time
-
 
 from BloomFilter import BloomFilter 
 
@@ -11,7 +8,6 @@ from random import randrange
 
 import multiprocessing as mp
 from multiprocessing.managers import BaseManager
-
 
 class MyManager(BaseManager):
     pass
@@ -159,7 +155,8 @@ def read_test(name, bloom_filter, data, lock):
     finally:
         lock.release() 
 
-def read_write_multithread_test(num_of_process, items_count, fp_rpob, hash_cnt):
+def read_write_multiprocess_test(num_of_process, items_count, fp_rpob, hash_cnt):
+
     """
     test read write  random multithread test'
     """
@@ -216,15 +213,14 @@ def read_write_test(word, items_count, fp_rpob, hash_cnt):
 
 
 if __name__ == '__main__':
-
-
     # single read write test
     # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
     read_write_test("wordtest", 1000, 0.01, 3)
 
     # random read write test
     # eg number of process = 8, items_count = 1000, fp_prob = 0.01, hash_cnt=3,
-    read_write_multithread_test(8, 1000, 0.01, 3)
+    read_write_multiprocess_test(8, 1000, 0.01, 3)
+
 
     # 10 million data 
     items_count = 10000000
