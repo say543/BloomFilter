@@ -1,91 +1,244 @@
 
 
+import math
+import time
 
 
 from BloomFilter import BloomFilter 
 
 from random import shuffle 
+from random import randrange
+
+import multiprocessing as mp
+from multiprocessing.managers import BaseManager
 
 
-#=======================
-# test by given desgired false positive probability only
-#=======================
-'''
-items_count = 10000000
-fp_list = [0.1, 0.01, 0.001, 0.0001]
-for fp_prob in fp_list:
+class MyManager(BaseManager):
+    pass
 
-	size = BloomFilter.get_size(items_count,fp_prob)
+def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size):
+    """
+     evaluate error rate by randomly accesing  by given test_size
+    """
 
-	ratio = size / items_count
-
-	# two options for calculation
-	print(f'hash_count: {BloomFilter.get_hash_count_by_array_size_and_element_size(size, items_count)}\t ratio: {ratio}')
-	print(f'hash_countByProb: {BloomFilter.get_hash_count_by_fp_prob(fp_prob)}\t ratio: {ratio}') 
-'''
-
-#=======================
-# test by given desgired false positive probability and given k hash function constraints
-#=======================
-items_count = 10000000
-fp_list = [0.1, 0.01, 0.001, 0.0001]
-hash_cnt_list = [1, 2, 3, 4]
-for fp_prob in fp_list:
-	for hash_cnt in hash_cnt_list:
-
-		size = BloomFilter.get_size_by_fp_prob_and_hash_count(hash_cnt, fp_prob)
-
-		ratio = size / items_count
-
-		# originla format
-		print(f'false_positive:{fp_prob} \t hash_count: {hash_cnt}\t ratio: {ratio}')
-		
-		# beauti format
-		print(f'false_positive:{fp_prob} \t hash_count: {hash_cnt}\t ratio: {format(ratio, "2.6f")}')
-
-
-
-
-'''
-n = 20 #no of items to add 
-p = 0.05 #false positive probability 
+    for item in word_present:
+        bloom_filter.add(item)
   
-bloomf = BloomFilter(n,p) 
-'''
+    # random shuffle
+    shuffle(word_present) 
+    shuffle(word_absent) 
 
-'''
-print("Size of bit array:{}".format(bloomf.size)) 
-print("False positive Probability:{}".format(bloomf.fp_prob)) 
-print("Number of hash functions:{}".format(bloomf.hash_count)) 
-'''
+    present_size = (int)(test_size / 2)
+    absent_size = test_size - present_size
 
-'''
-# words to be added 
-word_present = ['abound','abounds','abundance','abundant','accessable', 
-                'bloom','blossom','bolster','bonny','bonus','bonuses', 
-                'coherent','cohesive','colorful','comely','comfort', 
-                'gems','generosity','generous','generously','genial'] 
-  
-# word not added 
-word_absent = ['bluff','cheater','hate','war','humanity', 
-               'racism','hurt','nuke','gloomy','facebook', 
-               'geeksforgeeks','twitter'] 
-  
-for item in word_present: 
-    bloomf.add(item) 
-  
-shuffle(word_present) 
-shuffle(word_absent) 
-  
-test_words = word_present[:10] + word_absent 
-shuffle(test_words) 
-for word in test_words: 
-    if bloomf.check(word): 
-        if word in word_absent: 
-            print("'{}' is a false positive!".format(word)) 
-        else: 
-            print("'{}' is probably present!".format(word)) 
-    else: 
-        print("'{}' is definitely not present!".format(word)) 
+    test_words = word_present[:present_size] + word_absent[:absent_size]
 
-'''
+    fp_cnt = 0
+    total_cn = test_size *2
+
+    for word in test_words:
+        if bloom_filter.may_match(word):
+            if word in word_absent:
+                #print (f'false positive') 
+                fp_cnt = fp_cnt + 1
+
+    return  fp_cnt / total_cn
+
+def evaluate_hash_Count_and_Array_size(items_count, fp_list):
+    """
+     evaluate hash Count and array size by given desgired false positive probability only
+    """
+    print(f'====================================================================================')
+    print(f'evaluate hash Count and array size by given desgired false positive probability only')
+    print(f'====================================================================================')
+
+    for fp_prob in fp_list:
+        size = BloomFilter.get_size(items_count,fp_prob)
+        ratio = size / items_count
+        # two options for calculation
+        print(f'hash_count: {BloomFilter.get_hash_count_by_array_size_and_element_size(size, items_count)} \
+             ratio: {format(ratio, ".2e")}')
+        print(f'hash_countByProb: {BloomFilter.get_hash_count_by_fp_prob(fp_prob)} \
+             ratio: {format(ratio, ".2e")}')
+
+def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
+    """
+     evaluate false positive rate by given desgired false positive probability and given k hash function constraints
+    """
+
+    print(f'===============================================================================================================')
+    print(f'evaluate false positive probailitiy by given desgired false positive probability and given k hash function constraints')
+    print(f'===============================================================================================================')
+
+    for fp_prob in fp_list:
+        for hash_cnt in hash_cnt_list:
+
+            size = BloomFilter.get_size_by_hash_count_and_fp_prob(items_count, hash_cnt, fp_prob)
+    
+            ratio = size / items_count
+
+            # originla format
+            #print(f'false_positive:{fp_prob} \t hash_count: {hash_cnt}\t ratio: {ratio}')
+
+            print(f'false_positive:{fp_prob} \
+                hash_count: {hash_cnt} \
+                ratio: {format(ratio, ".2e")} \
+                space(MB): {format(size / math.pow(2, 20) / 8, "f")}')
+
+
+
+
+
+def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_size=10000):
+    """
+    # test false positive probability by given desgired false positive probability and given k hash function constraints
+    """
+    word_list = []
+    int_file = None
+    try:
+        # use ISO for weird character
+        int_file = open(filename, "r", encoding = "ISO-8859-1")
+        while True:
+            line = int_file.readline()
+            if not line:
+                break
+            word_list.append(line)
+    except ValueError as excep:
+        print(f'input argument in valid:{excep}')
+    except Exception:
+        print (f'unknown exception, something wrong')
+    finally:
+        if int_file is not None:
+            int_file.close()
+
+
+    print(f'===============================================================================================================')
+    print(f'test false positive probability by given desgired false positive probability and given k hash function constraints')
+    print(f'===============================================================================================================')
+    if test_size <= 1:
+        raise ValueError("test_size must be at least 2")
+
+
+    word_present_cnt = (int)(len(word_list)/2)
+    word_absent_cnt = (int)(len(word_list)/2)
+
+    word_present = word_list[:word_present_cnt]
+    word_absent = word_list[word_present_cnt:]
+
+    items_count = word_present_cnt # number of items being insert
+
+    bloom_filter = BloomFilter(items_count, fp_prob, hash_cnt) 
+    print(f'word_list size: {len(word_list)}')
+    print(f'iteration: {iteration}')
+    print(f'expected test size: {min(test_size, len(word_list))}')
+
+
+    for iter in range(iteration):
+        print (f'flase positive rate: \
+            {format(evaluate_error_rate(word_present, word_absent, bloom_filter, min(test_size, len(word_list))), "f")}')
+
+def write_test(name, bloom_filter, data, lock):
+    try:
+        lock.acquire() 
+        bloom_filter.add(data)
+        print (f'{name} add data: {data}')
+        #print (f'Wlook up data:{data} = {bloom_filter.may_match(data)}')
+
+    except Exception as e:
+        raise
+    finally:
+        lock.release() 
+
+def read_test(name, bloom_filter, data, lock):
+    try:
+        lock.acquire() 
+        res = bloom_filter.may_match(data)
+        print (f'{name} look up data: {data} = {res}')
+    except Exception as e:
+        raise
+    finally:
+        lock.release() 
+
+def read_write_multithread_test(num_of_process, items_count, fp_rpob, hash_cnt):
+    """
+    test read write  random multithread test'
+    """
+    print(f'===============================================================================================================')
+    print(f'test read write  random multithread test')
+    print(f'===============================================================================================================')
+    if num_of_process <= 0:
+        raise ValueError("num_of_process must bigger than zero")
+
+    
+    MyManager.register('BloomFilter', BloomFilter)
+
+    manager = MyManager()
+    manager.start()
+
+    word_list = ['gems','generosity','generous','generously','genial', 'racism','hurt','nuke','gloomy','facebook']
+
+    # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    bloom_filter = manager.BloomFilter(items_count, fp_rpob, hash_cnt) 
+
+    lock= mp.Lock() 
+
+    shuffle(word_list)
+    processes = []
+    for i in range(num_of_process):
+        mode = randrange(3)
+        word_index = randrange(len(word_list));
+        if mode == 0 :
+            processes.append(mp.Process(target = write_test, args=(f'write_{i}', bloom_filter, word_list[word_index], lock)))
+        else:
+            processes.append(mp.Process(target = read_test, args=(f'read_{i} ', bloom_filter, word_list[word_index], lock)));
+
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join()        
+
+    manager.shutdown()
+    manager.join()
+
+    
+def read_write_test(word, items_count, fp_rpob, hash_cnt):
+    """
+    test single write and read test
+    """
+    print(f'===============================================================================================================')
+    print(f'single write and read test')
+    print(f'===============================================================================================================')   
+    # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    bloom_filter = BloomFilter(items_count, fp_rpob, hash_cnt) 
+    bloom_filter.add(word)
+    print (f'add data: {word}')
+    print (f'look up data: {word} = {bloom_filter.may_match(word)}')
+
+
+if __name__ == '__main__':
+
+
+    # single read write test
+    # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    read_write_test("wordtest", 1000, 0.01, 3)
+
+    # random read write test
+    # eg number of process = 8, items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    read_write_multithread_test(8, 1000, 0.01, 3)
+
+    # 10 million data 
+    items_count = 10000000
+    # false positive list
+    fp_list = [0.1, 0.01, 0.001, 0.0001]
+    # hash cnt list
+    hash_cnt_list = [1, 2, 3, 4]
+
+    #evaluate hash Count and array size by given desgired false positive probability only
+    evaluate_hash_Count_and_Array_size(items_count, fp_list)
+
+    # evaluate array size by given desgired false positive probability and given k hash function constraints
+    evaluate_fp_rate(items_count, fp_list, hash_cnt_list)
+
+    # evaluate false positive rate by given desgired false positive probability and given k hash function constraints
+    # eg: fp_prob = 0.01, hash_cnt=3, iteration=30, test_size=10000
+    test_real_fp_prob("wordlist.txt", 0.01, 3, 30, 10000)
