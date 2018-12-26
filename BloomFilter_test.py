@@ -1,8 +1,5 @@
-
-
 import math
 import time
-
 
 from BloomFilter import BloomFilter 
 
@@ -11,7 +8,6 @@ from random import randrange
 
 import multiprocessing as mp
 from multiprocessing.managers import BaseManager
-
 
 class MyManager(BaseManager):
     pass
