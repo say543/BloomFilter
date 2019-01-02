@@ -35,7 +35,6 @@ def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size):
     for word in test_words:
         if bloom_filter.may_match(word):
             if word in word_absent:
-                #print (f'false positive') 
                 fp_cnt = fp_cnt + 1
 
     return  fp_cnt / total_cn
