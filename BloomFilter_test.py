@@ -49,6 +49,8 @@ def evaluate_hash_count_and_ratio(items_count, fp_list):
     for fp_prob in fp_list:
         size = BloomFilter.get_size(items_count,fp_prob)
         ratio = size / items_count
+        print(f'false_positive: {fp_prob} \
+             array_size: {size}')
         # two options for calculation
         print(f'hash_count: {BloomFilter.get_hash_count_by_array_size_and_element_size(size, items_count)} \
              ratio: {format(ratio, ".2e")}')
@@ -72,6 +74,7 @@ def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
             ratio = size / items_count
 
             print(f'false_positive:{fp_prob} \
+                array_size: {size} \
                 hash_count: {hash_cnt} \
                 ratio: {format(ratio, ".2e")} \
                 space(MB): {format(size / math.pow(2, 20) / 8, "f")}')
@@ -99,8 +102,10 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
     print(f'===============================================================================================================')
     print(f'test false positive probability by given desgired false positive probability and given k hash function constraints')
     print(f'===============================================================================================================')
-    if test_size <= 1:
-        raise ValueError("test_size must be at least 2")
+    if test_size <= 0:
+        raise ValueError("test_size must bigger than zero")
+    if len(word_list) <= 1:
+        raise ValueError("word_list_size must be at least 2")
 
     word_present_cnt = (int)(len(word_list)/2)
     word_absent_cnt = (int)(len(word_list)/2)
@@ -108,12 +113,17 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
     word_present = word_list[:word_present_cnt]
     word_absent = word_list[word_present_cnt:]
 
-    items_count = word_present_cnt # number of items being insert
+    # number of items being insert
+    items_count = word_present_cnt
 
     bloom_filter = BloomFilter(items_count, fp_prob, hash_cnt) 
     print(f'word_list size: {len(word_list)}')
     print(f'iteration: {iteration}')
-    print(f'expected test size: {min(test_size, len(word_list))}')
+    print(f'input test size: {test_size}')
+
+    # use smaller cnt as possible test_size
+    test_size = min(test_size, len(word_list))
+    print(f'adjusted test size: {test_size}')
 
     for iter in range(iteration):
         print (f'test false positive rate: \
