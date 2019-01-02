@@ -78,10 +78,6 @@ def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
                 ratio: {format(ratio, ".2e")} \
                 space(MB): {format(size / math.pow(2, 20) / 8, "f")}')
 
-
-
-
-
 def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_size=10000):
     """
     # test false positive probability by given desgired false positive probability and given k hash function constraints
@@ -104,13 +100,11 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
         if int_file is not None:
             int_file.close()
 
-
     print(f'===============================================================================================================')
     print(f'test false positive probability by given desgired false positive probability and given k hash function constraints')
     print(f'===============================================================================================================')
     if test_size <= 1:
         raise ValueError("test_size must be at least 2")
-
 
     word_present_cnt = (int)(len(word_list)/2)
     word_absent_cnt = (int)(len(word_list)/2)
@@ -124,7 +118,6 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
     print(f'word_list size: {len(word_list)}')
     print(f'iteration: {iteration}')
     print(f'expected test size: {min(test_size, len(word_list))}')
-
 
     for iter in range(iteration):
         print (f'flase positive rate: \
@@ -208,7 +201,6 @@ def read_write_test(word, items_count, fp_rpob, hash_cnt):
     print (f'add data: {word}')
     print (f'look up data: {word} = {bloom_filter.may_match(word)}')
 
-
 if __name__ == '__main__':
     # single read write test
     # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
@@ -217,7 +209,6 @@ if __name__ == '__main__':
     # random read write test with process management
     # eg number of process = 8, items_count = 1000, fp_prob = 0.01, hash_cnt=3,
     read_write_multiprocess_test(8, 1000, 0.01, 3)
-
 
     # 10 million data 
     items_count = 10000000
