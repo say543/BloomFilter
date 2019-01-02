@@ -73,9 +73,6 @@ def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
     
             ratio = size / items_count
 
-            # originla format
-            #print(f'false_positive:{fp_prob} \t hash_count: {hash_cnt}\t ratio: {ratio}')
-
             print(f'false_positive:{fp_prob} \
                 hash_count: {hash_cnt} \
                 ratio: {format(ratio, ".2e")} \
@@ -217,7 +214,7 @@ if __name__ == '__main__':
     # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
     read_write_test("wordtest", 1000, 0.01, 3)
 
-    # random read write test
+    # random read write test with process management
     # eg number of process = 8, items_count = 1000, fp_prob = 0.01, hash_cnt=3,
     read_write_multiprocess_test(8, 1000, 0.01, 3)
 
@@ -229,12 +226,13 @@ if __name__ == '__main__':
     # hash cnt list
     hash_cnt_list = [1, 2, 3, 4]
 
-    #evaluate hash Count and array size by given desgired false positive probability only
+    #evaluate hash Count and array size by given desired false positive probability only
     evaluate_hash_Count_and_Array_size(items_count, fp_list)
 
-    # evaluate array size by given desgired false positive probability and given k hash function constraints
+    # evaluate array size by given desired false positive probability and given k hash function constraints
     evaluate_fp_rate(items_count, fp_list, hash_cnt_list)
 
-    # evaluate false positive rate by given desgired false positive probability and given k hash function constraints
+    # evaluate false positive rate by given desired false positive probability and given k hash function constraints
+    # wordlist.txt IS REQUIRED at the folder for this test 
     # eg: fp_prob = 0.01, hash_cnt=3, iteration=30, test_size=10000
     test_real_fp_prob("wordlist.txt", 0.01, 3, 30, 10000)
