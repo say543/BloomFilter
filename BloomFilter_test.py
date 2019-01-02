@@ -92,10 +92,8 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
             if not line:
                 break
             word_list.append(line)
-    except ValueError as excep:
-        print(f'input argument in valid:{excep}')
-    except Exception:
-        print (f'unknown exception, something wrong')
+    except Exception as excep:
+        print (f'unknown exception, something wrong: {excep}')
     finally:
         if int_file is not None:
             int_file.close()
