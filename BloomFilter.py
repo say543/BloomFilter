@@ -31,7 +31,6 @@ class BloomFilter(object):
 
             self.hash_count = hash_count
             self.size = (int)(self.get_size_by_hash_count_and_fp_prob(items_count, hash_count, fp_prob))
-
         else: 
             # False posible probability in decimal 
             self.fp_prob = fp_prob 
@@ -58,7 +57,6 @@ class BloomFilter(object):
             items (string):  an item to insert
         """
         for i in range(self.hash_count): 
-  
             # create digest for given item. 
             # use i as random seed for mmh3 hash function
             array_index = mmh3.hash(item, i) % self.size 
@@ -71,7 +69,6 @@ class BloomFilter(object):
         Check for existence of an item in filter 
         Args:
             items (string):  an item to insert
-
         """
         for i in range(self.hash_count):
             # use i as random seed for mmh3 hash function
@@ -155,7 +152,6 @@ class BloomFilter(object):
             raise ValueError("fp_prob must be bigger than 0")
         if hash_count == None or  hash_count <=0:
             raise ValueError("hash_count must be bigger than 0")
-
 
         fp_prob_with_power = math.pow(fp_prob, 1/hash_count)
         ratio = 2 * hash_count / (2* fp_prob_with_power + fp_prob_with_power * fp_prob_with_power)
