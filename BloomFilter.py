@@ -60,7 +60,7 @@ class BloomFilter(object):
         for i in range(self.hash_count): 
   
             # create digest for given item. 
-            # use i as random for mmh3 hash function
+            # use i as random seed for mmh3 hash function
             array_index = mmh3.hash(item, i) % self.size 
   
             # set the bit True in bit_array 
@@ -73,7 +73,8 @@ class BloomFilter(object):
             items (string):  an item to insert
 
         """
-        for i in range(self.hash_count): 
+        for i in range(self.hash_count):
+            # use i as random seed for mmh3 hash function
             array_index = mmh3.hash(item, i) % self.size 
             if self.bit_array[array_index] == False: 
                 # if any of bit is False then,its not present 
