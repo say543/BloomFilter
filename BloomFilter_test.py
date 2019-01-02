@@ -117,7 +117,7 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
     print(f'expected test size: {min(test_size, len(word_list))}')
 
     for iter in range(iteration):
-        print (f'flase positive rate: \
+        print (f'test false positive rate: \
             {format(evaluate_error_rate(word_present, word_absent, bloom_filter, min(test_size, len(word_list))), "f")}')
 
 def write_test(name, bloom_filter, data, lock):
