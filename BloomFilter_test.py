@@ -141,10 +141,10 @@ def read_test(name, bloom_filter, data, lock):
 
 def read_write_multiprocess_test(num_of_process, items_count, fp_rpob, hash_cnt):
     """
-    test read write  random multithread test'
+    test read write  random multiprocess test'
     """
     print(f'===============================================================================================================')
-    print(f'test read write  random multithread test')
+    print(f'test read write  random multiprocess test')
     print(f'===============================================================================================================')
     if num_of_process <= 0:
         raise ValueError("num_of_process must bigger than zero")
