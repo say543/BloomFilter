@@ -63,9 +63,8 @@ class BloomFilter(object):
         for i in range(self.hash_count): 
   
             # create digest for given item. 
-            # i work as seed to mmh3.hash() function 
-            # With different seed, digest created is different 
-            array_index = mmh3.hash(item,i) % self.size 
+            # use i as random for mmh3 hash function
+            array_index = mmh3.hash(item, i) % self.size 
   
             # set the bit True in bit_array 
             self.bit_array[array_index] = True
@@ -78,9 +77,8 @@ class BloomFilter(object):
 
         """
         for i in range(self.hash_count): 
-            array_index = mmh3.hash(item,i) % self.size 
+            array_index = mmh3.hash(item, i) % self.size 
             if self.bit_array[array_index] == False: 
-  
                 # if any of bit is False then,its not present 
                 return False
         return True
@@ -184,8 +182,4 @@ class BloomFilter(object):
         ratio = 2 * hash_count / (2* fp_prob_with_power + fp_prob_with_power * fp_prob_with_power)
         array_size = ratio * items_count
         return array_size
-    
-
-
-
-
+   
