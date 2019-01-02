@@ -38,12 +38,12 @@ def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size):
 
     return  fp_cnt / total_cn
 
-def evaluate_hash_Count_and_Array_size(items_count, fp_list):
+def evaluate_hash_Count_and_ratio(items_count, fp_list):
     """
      evaluate hash Count and array size by given desgired false positive probability only
     """
     print(f'====================================================================================')
-    print(f'evaluate hash Count and array size by given desgired false positive probability only')
+    print(f'evaluate hash Count and items_count / array size ratio ')
     print(f'====================================================================================')
 
     for fp_prob in fp_list:
@@ -210,8 +210,8 @@ if __name__ == '__main__':
     # hash cnt list
     hash_cnt_list = [1, 2, 3, 4]
 
-    #evaluate hash Count and array size by given desired false positive probability only
-    evaluate_hash_Count_and_Array_size(items_count, fp_list)
+    #evaluate hash Count and ratio by providng  items_count and false positive probability
+    evaluate_hash_Count_and_ratio(items_count, fp_list)
 
     # evaluate array size by given desired false positive probability and given k hash function constraints
     evaluate_fp_rate(items_count, fp_list, hash_cnt_list)
