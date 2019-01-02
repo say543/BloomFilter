@@ -104,6 +104,10 @@ class BloomFilter(object):
             float: Return the size of bit array(m) to used
 
         """
+        if items_count == None or items_count <= 0:
+            raise ValueError("items_count must be bigger than 0")
+        if fp_prob == None or fp_prob <= 0:
+            raise ValueError("fp_prob must be bigger than 0")
         array_size = -(items_count * math.log(fp_prob))/(math.log(2)**2) 
         return array_size 
   
@@ -124,6 +128,10 @@ class BloomFilter(object):
         Returns:
             float: Return the optimized hash cnt to be used
         """
+        if items_count == None or items_count <= 0:
+            raise ValueError("items_count must be bigger than 0")
+        if array_size == None or array_size <= 0:
+            raise ValueError("array_size must be bigger than 0")
 
         hash_count = (array_size/items_count) * math.log(2) 
         return hash_count 
@@ -142,6 +150,9 @@ class BloomFilter(object):
         Returns:
             float: Return the optimized hash cnt to be used based on fp_prob
         """
+        if fp_prob == None or fp_prob <= 0:
+            raise ValueError("fp_prob must be bigger than 0")
+
         hash_count = (-1) * math.log(fp_prob, 2) 
         return hash_count 
 
@@ -160,6 +171,15 @@ class BloomFilter(object):
         Returns:
             float: return optimized array size to be used based on fp_prob and hash count
         """
+
+        if items_count == None or items_count <= 0:
+            raise ValueError("items_count must be bigger than 0")
+        if fp_prob == None or fp_prob <= 0:
+            raise ValueError("fp_prob must be bigger than 0")
+        if hash_count == None or  hash_count <=0:
+            raise ValueError("hash_count must be bigger than 0")
+
+
         fp_prob_with_power = math.pow(fp_prob, 1/hash_count)
         ratio = 2 * hash_count / (2* fp_prob_with_power + fp_prob_with_power * fp_prob_with_power)
         array_size = ratio * items_count
