@@ -108,7 +108,7 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
         raise ValueError("word_list_size must be at least 2")
 
     word_present_cnt = (int)(len(word_list)/2)
-    word_absent_cnt = (int)(len(word_list)/2)
+    word_absent_cnt = len(word_list) - word_present_cnt
 
     word_present = word_list[:word_present_cnt]
     word_absent = word_list[word_present_cnt:]
@@ -206,7 +206,7 @@ def read_write_test(word, items_count, fp_rpob, hash_cnt):
 
 if __name__ == '__main__':
     # single read write test
-    # eg : items_count = 1000, fp_prob = 0.01, hash_cnt=3,
+    # eg : testword ="wordtest", items_count = 1000, fp_prob = 0.01, hash_cnt=3,
     read_write_test("wordtest", 1000, 0.01, 3)
 
     # random read write test with process management
@@ -228,5 +228,5 @@ if __name__ == '__main__':
 
     # evaluate false positive rate by given desired false positive probability and given k hash function constraints
     # wordlist.txt IS REQUIRED at the folder for this test 
-    # eg: fp_prob = 0.01, hash_cnt=3, iteration=30, test_size=10000
+    # eg: filename = "wordlist.txt", fp_prob = 0.01, hash_cnt=3, iteration=30, test_size=10000
     test_real_fp_prob("wordlist.txt", 0.01, 3, 30, 10000)
