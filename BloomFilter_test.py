@@ -92,7 +92,7 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
                 break
             word_list.append(line)
     except Exception as excep:
-        print (f'unknown exception, something wrong: {excep}')
+        raise
     finally:
         if int_file is not None:
             int_file.close()
@@ -125,8 +125,6 @@ def write_test(name, bloom_filter, data, lock):
         lock.acquire() 
         bloom_filter.add(data)
         print (f'{name} add data: {data}')
-        #print (f'Wlook up data:{data} = {bloom_filter.may_match(data)}')
-
     except Exception as e:
         raise
     finally:
@@ -143,7 +141,6 @@ def read_test(name, bloom_filter, data, lock):
         lock.release() 
 
 def read_write_multiprocess_test(num_of_process, items_count, fp_rpob, hash_cnt):
-
     """
     test read write  random multithread test'
     """
