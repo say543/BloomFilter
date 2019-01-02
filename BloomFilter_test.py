@@ -16,7 +16,6 @@ def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size):
     """
      evaluate error rate by randomly accesing  by given test_size
     """
-
     for item in word_present:
         bloom_filter.add(item)
   
@@ -79,7 +78,7 @@ def evaluate_fp_rate(items_count, fp_list, hash_cnt_list):
 
 def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_size=10000):
     """
-    # test false positive probability by given desgired false positive probability and given k hash function constraints
+    test false positive probability by given desgired false positive probability and given k hash function constraints
     """
     word_list = []
     int_file = None
