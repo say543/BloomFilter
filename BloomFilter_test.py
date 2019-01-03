@@ -27,13 +27,15 @@ def evaluate_error_rate(word_present, word_absent, bloom_filter, test_size):
     absent_size = test_size - present_size
 
     test_words = word_present[:present_size] + word_absent[:absent_size]
+    word_absent_set = set(word_absent[:absent_size])
+   
 
     fp_cnt = 0
     total_cn = test_size *2
 
     for word in test_words:
         if bloom_filter.may_match(word):
-            if word in word_absent:
+            if word in word_absent_set:
                 fp_cnt = fp_cnt + 1
 
     return  fp_cnt / total_cn
