@@ -89,7 +89,7 @@ def test_real_fp_prob(filename, fp_prob=0.01, hash_cnt=3, iteration=30, test_siz
         # use ISO for weird character
         int_file = open(filename, "r", encoding = "ISO-8859-1")
         while True:
-            line = int_file.readline()
+            line = int_file.readline().replace('\n','')
             if not line:
                 break
             word_list.append(line)
