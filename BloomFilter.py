@@ -30,14 +30,14 @@ class BloomFilter(object):
             self.fp_prob = fp_prob 
 
             self.hash_count = hash_count
-            self.size = (int)(self.get_size_by_hash_count_and_fp_prob(items_count, hash_count, fp_prob))
+            self.size = math.ceil(self.get_size_by_hash_count_and_fp_prob(items_count, hash_count, fp_prob))
         else: 
             # False posible probability in decimal 
             self.fp_prob = fp_prob 
 
             # number of hash functions to use 
-            self.hash_count = (int) (self.get_hash_count_by_fp_prob(fp_prob))
-            self.size = (int)( self.get_size(items_count, fp_prob))
+            self.hash_count = math.ceil(self.get_hash_count_by_fp_prob(fp_prob))
+            self.size = math.ceil( self.get_size(items_count, fp_prob))
             
         # outout initlization information
         print(f'false_positive:{fp_prob} \
